@@ -14,7 +14,7 @@ from bnn_priors.third_party.calibration_error import ece, ace, rmsce
 import warnings
 import sacred
 from pathlib import Path
-
+import pdb
 from typing import Dict, Iterable, Tuple
 
 
@@ -303,7 +303,6 @@ def evaluate_model(model: bnn_priors.models.AbstractModel,
     # lps: n_samples,len(dataset)
     lps_each_model = lps.mean(1)
     lp_ensemble = _log_space_mean(lps, 0).mean()
-
     # acc_data: n_samples,len(dataset), (n_classes or n_outputs)
     if isinstance(preds, t.distributions.Categorical):
         ensemble_preds = t.distributions.Categorical(logits=_log_space_mean(acc_data, 0))
@@ -504,12 +503,12 @@ class HDF5Metrics(HDF5ModelSaver):
                 self._scrub_cache()
 
             self._step = step
-            self._append("steps", step, np.int64)
+            self._append("steps", step, np.float64) 
             self._append("timestamps", time.time(), np.float64)
 
         elif step < self._step:
             raise ValueError(f"step went backwards ({self._step} -> {step})")
-        self._append(name, value, type(value))
+        self._append(name, value, np.float64)
 
     def _scrub_cache(self):
         for v in self._cache.values():
